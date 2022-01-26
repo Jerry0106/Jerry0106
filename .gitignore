@@ -1,8 +1,9 @@
 node_modules
-public/bootstrap
-public/fontawesome
-public/js
-index.js
-*json
+public
+views
+
+
+
+
 
 
