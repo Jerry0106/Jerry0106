@@ -1,0 +1,19 @@
+
+
+# 回應
+res.end()
+res.send()
+res.json()
+res.render()
+res.redirect
+
+
+# 輸入的資料
+
+req.query  # query string (GET)
+req.body   # 表單的資料 (POST)
+
+
+
+
+middleware # 中介軟體
