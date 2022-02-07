@@ -1,5 +1,5 @@
-class Person{
-    constructor(name='noname',age=0){
+class Person{  //類型必須大寫
+    constructor(name='noname',age=0){//constructor建構函式
         this.name = name;
         this.age = age;
     }

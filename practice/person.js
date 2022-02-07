@@ -12,7 +12,7 @@ class Person{
     sayHello(){
         return `Hello $(this.name)`;
     }
-}
+} 
 
 const f3 = a => a*a*a; //沒有匯出無法使用
 
