@@ -2,10 +2,15 @@ console.log(process.env.NODE_ENV);
 
 require('dotenv').config();
 const express = require('express');
+const session = require('express-session');
+const MysqlStore = require('express-mysql-session')(session);
+const moment = require('moment-timezone');
 const multer = require('multer');
 // const upload = multer({dest: 'tmp_uploads/'});
 const upload = require(__dirname + '/modules/upload-imgs');
 const fs = require('fs').promises;
+const db = require('./modules/connect-db');
+const sessionStore = new MysqlStore({}, db);
 
 const app = express();
 
@@ -21,10 +26,25 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(express.static('public'));
 
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: 'sdkfkdh984576894kjdkgjhdfkkjdfgjkfjsdfjhskAAAkdfjdsf',
+    store: sessionStore,
+    cookie: {
+        maxAge: 1200000
+    }
+}));
 // 自訂的 頂層 middleware
 app.use((req, res, next)=>{
     res.locals.shin = '哈囉';
-    // res.send('oooooooo); //回應之後,不會往下個路由規則
+    // res.send('oooo'); // 回應之後, 不會往下個路由規則
+
+    // template helper functions 樣版輔助函式
+    res.locals.toDateString = d => moment(d).format('YYYY-MM-DD');
+    res.locals.toDatetimeString = d => moment(d).format('YYYY-MM-DD HH:mm:ss');
+
+
     next();
 });
 
@@ -123,6 +143,32 @@ app.get(/^\/m\/09\d{2}-?\d{3}-?\d{3}$/i, (req, res)=>{
 });
 
 app.use('/admin2',  require('./routes/admin2') );
+app.use('/address-book',  require('./routes/address-book') );
+
+app.get('/try-session', (req, res)=>{
+    req.session.my_var = req.session.my_var || 0;
+    req.session.my_var++;
+    res.json(req.session);
+});
+
+app.get('/try-moment', (req, res)=>{
+    const fm = 'YYYY-MM-DD HH:mm:ss';
+    res.json({
+        mo1: moment().format(fm),
+        mo2: moment().tz('Europe/London').format(fm),
+        mo3: moment(req.session.cookie.expires).format(fm),
+        mo4: moment(req.session.cookie.expires).tz('Europe/London').format(fm),
+    });
+});
+
+app.get('/try-db', async (req, res)=>{
+    const sql = "SELECT * FROM address_book LIMIT 5";
+
+    const [rs, fields] = await db.query(sql);
+
+    res.json(rs);
+
+});
 
 
 // ********** 所有路由的後面

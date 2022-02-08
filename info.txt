@@ -16,6 +16,7 @@ req.body   # 表單的資料 (POST)
 req.file # multer 檔案上傳
 req.fileㄋ # multer 檔案上傳
 
+req.session 
 middleware # 中介軟體
 
 
